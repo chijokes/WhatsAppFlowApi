@@ -1,6 +1,7 @@
 
 
 using System.Text.Json;
+using System.Text;
 using Microsoft.AspNetCore.Http.Json;
 using WhatsAppFlowApi;
 
@@ -30,11 +31,37 @@ app.MapGet("/healthz", () => Results.Ok("Healthy"));
 // Root endpoint (optional)
 app.MapGet("/", () => Results.Ok(new { status = "ok" }));
 
+// Safe debug endpoint to check whether the key env var is present.
+// This DOES NOT return the key material.
+app.MapGet("/debug/env", () =>
+{
+    var hasPem = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("PRIVATE_KEY_PEM"));
+    var hasB64 = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("PRIVATE_KEY_PEM_B64"));
+    return Results.Ok(new { keyPresent = hasPem || hasB64, hasPem, hasB64 });
+});
+
 
 app.MapPost("/flows/endpoint", async (FlowEncryptedRequest req) =>
 {
-    // Load private key from environment variable
+    // Load private key from environment variable. If the raw PEM is not set,
+    // support a base64-encoded PEM in `PRIVATE_KEY_PEM_B64` (useful for env UIs)
     var privateKeyPem = Environment.GetEnvironmentVariable("PRIVATE_KEY_PEM");
+    if (string.IsNullOrEmpty(privateKeyPem))
+    {
+        var privateKeyPemB64 = Environment.GetEnvironmentVariable("PRIVATE_KEY_PEM_B64");
+        if (!string.IsNullOrEmpty(privateKeyPemB64))
+        {
+            try
+            {
+                privateKeyPem = Encoding.UTF8.GetString(Convert.FromBase64String(privateKeyPemB64));
+            }
+            catch
+            {
+                return Results.BadRequest(new { error = "PRIVATE_KEY_PEM_B64 invalid base64" });
+            }
+        }
+    }
+
     if (string.IsNullOrEmpty(privateKeyPem))
     {
         return Results.BadRequest(new { error = "PRIVATE_KEY_PEM environment variable not set" });
