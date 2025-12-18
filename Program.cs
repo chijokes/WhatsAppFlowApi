@@ -1,6 +1,8 @@
 
 
+using System.Text.Json;
 using Microsoft.AspNetCore.Http.Json;
+using WhatsAppFlowApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,12 +33,12 @@ app.MapGet("/", () => Results.Ok(new { status = "ok" }));
 
 // Load private key once (store in env/secret manager in real deployments)
 var privateKeyPem = File.ReadAllText("private_key.pem");
-var rsa = LoadRsaFromPem(privateKeyPem);
+var rsa = FlowEncryptStatic.LoadRsaFromPem(privateKeyPem);
 
 app.MapPost("/flows/endpoint", async (FlowEncryptedRequest req) =>
 {
     // 1) decrypt
-    var decryptedJson = DecryptFlowRequest(req, rsa, out var aesKey, out var iv);
+    var decryptedJson = FlowEncryptStatic.DecryptFlowRequest(req, rsa, out var aesKey, out var iv);
 
     using var doc = JsonDocument.Parse(decryptedJson);
     var action = doc.RootElement.GetProperty("action").GetString();
@@ -50,12 +52,12 @@ app.MapPost("/flows/endpoint", async (FlowEncryptedRequest req) =>
             data = new { status = "active" }
         };
 
-        var encryptedResponse = EncryptFlowResponse(responseObj, aesKey, iv);
+        var encryptedResponse = FlowEncryptStatic.EncryptFlowResponse(responseObj, aesKey, iv);
         return Results.Text(encryptedResponse, "application/json");
     }
 
     // For now, just return “active” on other actions too (to pass health check quickly)
-    var fallback = EncryptFlowResponse(new { version = "3.0", data = new { status = "active" } }, aesKey, iv);
+    var fallback = FlowEncryptStatic.EncryptFlowResponse(new { version = "3.0", data = new { status = "active" } }, aesKey, iv);
     return Results.Text(fallback, "application/json");
 });
 
