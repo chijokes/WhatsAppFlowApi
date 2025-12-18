@@ -26,10 +26,16 @@ C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\obj\Debug\net9.0\staticwebassets.b
 C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\obj\Debug\net9.0\staticwebassets.build.json.cache
 C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\obj\Debug\net9.0\staticwebassets.development.json
 C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\obj\Debug\net9.0\staticwebassets.build.endpoints.json
-C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt
 C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\obj\Debug\net9.0\WhatsApp.79B55D41.Up2Date
 C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\obj\Debug\net9.0\WhatsAppFlowApi.dll
 C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\obj\Debug\net9.0\refint\WhatsAppFlowApi.dll
 C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\obj\Debug\net9.0\WhatsAppFlowApi.pdb
 C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\obj\Debug\net9.0\WhatsAppFlowApi.genruntimeconfig.cache
 C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\obj\Debug\net9.0\ref\WhatsAppFlowApi.dll
+C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\bin\Debug\net9.0\out\nuget.config
+C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\bin\Debug\net9.0\out\web.config
+C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\bin\Debug\net9.0\out\appsettings.Development.json
+C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\bin\Debug\net9.0\out\appsettings.json
+C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\bin\Debug\net9.0\out\WhatsAppFlowApi.deps.json
+C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\bin\Debug\net9.0\out\WhatsAppFlowApi.runtimeconfig.json
+C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\bin\Debug\net9.0\out\WhatsAppFlowApi.staticwebassets.endpoints.json
