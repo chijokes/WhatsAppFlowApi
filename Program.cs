@@ -49,7 +49,7 @@ app.MapGet("/webhook", (HttpRequest request) =>
     var token = request.Query["hub.verify_token"];
     var challenge = request.Query["hub.challenge"];
 
-    var verifyToken = Environment.GetEnvironmentVariable("WHATSAPP_VERIFY_TOKEN");
+    var verifyToken = Environment.GetEnvironmentVariable("MY_API_SECRET_KEY");
 
     if (mode == "subscribe" && token == verifyToken)
     {
