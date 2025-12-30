@@ -10,7 +10,7 @@
 // app.MapGet("/", () => Results.Ok(new { status = "ok" }));
 // app.MapGet("/healthz", () => Results.Ok("Healthy"));
 
-// // ✅ Verify webhook with Meta
+// // // ✅ Verify webhook with Meta
 
 // app.MapGet("/webhook", (HttpRequest request) =>
 // {
