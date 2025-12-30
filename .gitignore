@@ -90,3 +90,10 @@ publish/
 *.exe
 *.dll.config
 *.exe.config
+
+####################################
+# Sensitive keys
+####################################
+private_key.pem
+public_key.pem
+derived_public.pem
