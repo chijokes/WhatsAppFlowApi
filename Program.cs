@@ -1,105 +1,287 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using System.Text.Json;
 
-var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddHttpClient(); // Needed for sending messages
+// // =======================================================
+// // 🔹 ENCRYPTED FLOW ENDPOINT (UNCHANGED)
+// // =======================================================
+// app.MapPost("/flows/endpoint", async (FlowEncryptedRequest req) =>
+// {
+//     try
+//     {
+//         var privateKeyPem = Environment.GetEnvironmentVariable("PRIVATE_KEY_PEM");
 
-var app = builder.Build();
+//         if (string.IsNullOrEmpty(privateKeyPem))
+//         {
+//             var privateKeyPemB64 = Environment.GetEnvironmentVariable("PRIVATE_KEY_PEM_B64");
+//             if (!string.IsNullOrEmpty(privateKeyPemB64))
+//             {
+//                 privateKeyPem = Encoding.UTF8.GetString(
+//                     Convert.FromBase64String(privateKeyPemB64));
+//             }
+//         }
 
-app.MapGet("/", () => Results.Ok(new { status = "ok" }));
-app.MapGet("/healthz", () => Results.Ok("Healthy"));
+//         if (string.IsNullOrEmpty(privateKeyPem))
+//         {
+//             return Results.BadRequest(new { error = "PRIVATE_KEY_PEM not set" });
+//         }
 
-// ✅ Verify webhook with Meta
+//         var rsa = FlowEncryptStatic.LoadRsaFromPem(privateKeyPem);
 
-app.MapGet("/webhook", (HttpRequest request) =>
-{
-    Console.WriteLine("Received webhook verification request2");
+//         // 1️⃣ Decrypt
+//         var decryptedJson = FlowEncryptStatic.DecryptFlowRequest(
+//             req, rsa, out var aesKey, out var iv);
 
-    var mode = request.Query["hub.mode"].ToString();
-    var token = request.Query["hub.verify_token"].ToString();
-    var challenge = request.Query["hub.challenge"].ToString();
+//         using var doc = JsonDocument.Parse(decryptedJson);
+//         var action = doc.RootElement.GetProperty("action").GetString();
 
-    var verifyToken =
-        Environment.GetEnvironmentVariable("MY_API_SECRET_KEY")
-        ?? "supersecret123";
+//         // 2️⃣ Ping handler
+//         if (action == "ping")
+//         {
+//             var responseObj = new
+//             {
+//                 version = "3.0",
+//                 data = new { status = "active" }
+//             };
 
-    if (mode == "subscribe" && token == verifyToken)
-    {
-        Console.WriteLine("Webhook verified successfully!");
-        return Results.Text(challenge, "text/plain");
-    }
+//             var encrypted = FlowEncryptStatic.EncryptFlowResponse(
+//                 responseObj, aesKey, iv);
 
-    return Results.StatusCode(403);
-});
+//             return Results.Text(encrypted, "application/json");
+//         }
 
+//         // 3️⃣ Default response
+//         var fallback = FlowEncryptStatic.EncryptFlowResponse(
+//             new { version = "3.0", data = new { status = "active" } },
+//             aesKey, iv);
 
-app.MapPost("/webhook", async (JsonElement body, IHttpClientFactory httpClientFactory) =>
-{
-    try
-    {
-        var entry = body.GetProperty("entry")[0];
-        var changes = entry.GetProperty("changes")[0];
-        var value = changes.GetProperty("value");
-
-        if (!value.TryGetProperty("messages", out var messages))
-            return Results.Ok();
-
-        var message = messages[0];
-        var from = message.GetProperty("from").GetString();
-
-        string text = null;
-        if (message.TryGetProperty("text", out var textElement))
-            text = textElement.GetProperty("body").GetString()?.Trim().ToLower();
-
-        Console.WriteLine($"Received message from {from}: {text}");
-
-        if (text == "hi")
-        {
-            Console.WriteLine($"Sending auto-reply to {from}");
-            await SendWhatsAppMessageAsync(from, "Hello! This is an automated reply from your bot.", httpClientFactory);
-        }
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Error parsing webhook: {ex.Message}");
-    }
-
-    return Results.Ok();
-});
+//         return Results.Text(fallback, "application/json");
+//     }
+//     catch (Exception ex)
+//     {
+//         Console.Error.WriteLine(ex);
+//         return Results.StatusCode(500);
+//     }
+// });
 
 
 
-app.Run();
 
 
-// helper functions and records can go here
-// ==============================
-async Task SendWhatsAppMessageAsync(string to, string text, IHttpClientFactory httpClientFactory)
-{
-    var client = httpClientFactory.CreateClient();
-    var token = Environment.GetEnvironmentVariable("WHATSAPP_TOKEN"); // Your WhatsApp token
-    var phoneNumberId = Environment.GetEnvironmentVariable("WHATSAPP_PHONE_ID"); // Your test number ID
 
-    var payload = new
-    {
-        messaging_product = "whatsapp",
-        to = to,
-        type = "text",
-        text = new { body = text }
-    };
 
-    var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
-    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-    var response = await client.PostAsync($"https://graph.facebook.com/v17.0/{phoneNumberId}/messages", content);
 
-    if (!response.IsSuccessStatusCode)
-    {
-        var respBody = await response.Content.ReadAsStringAsync();
-        Console.WriteLine($"Failed to send WhatsApp message: {respBody}");
-    }
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+// using Microsoft.AspNetCore.Builder;
+// using Microsoft.Extensions.DependencyInjection;
+// using Microsoft.AspNetCore.Http;
+// using System.Text.Json;
+// using System.Text;
+// using System.Net.Http;
+// using System.Net.Http.Headers;
+
+// var builder = WebApplication.CreateBuilder(args);
+// builder.Services.AddHttpClient(); // Needed for sending messages
+
+// var app = builder.Build();
+
+// app.MapGet("/", () => Results.Ok(new { status = "ok" }));
+// app.MapGet("/healthz", () => Results.Ok("Healthy"));
+
+// // ✅ Verify webhook with Meta
+
+// app.MapGet("/webhook", (HttpRequest request) =>
+// {
+//     Console.WriteLine("Received webhook verification request2");
+
+//     var mode = request.Query["hub.mode"].ToString();
+//     var token = request.Query["hub.verify_token"].ToString();
+//     var challenge = request.Query["hub.challenge"].ToString();
+
+//     var verifyToken =
+//         Environment.GetEnvironmentVariable("MY_API_SECRET_KEY")
+//         ?? "supersecret123";
+
+//     if (mode == "subscribe" && token == verifyToken)
+//     {
+//         Console.WriteLine("Webhook verified successfully!");
+//         return Results.Text(challenge, "text/plain");
+//     }
+
+//     return Results.StatusCode(403);
+// });
+
+
+// app.MapPost("/webhook", async (
+//     HttpRequest request,
+//     JsonElement body,
+//     IHttpClientFactory httpClientFactory
+// ) =>
+// {
+//     Console.WriteLine("📡 Webhook POST received");
+
+//     try
+//     {
+//         // Log raw body (important for test debugging)
+//         Console.WriteLine($"🧪 Raw payload:\n{body}");
+
+//         var entry = body.GetProperty("entry")[0];
+//         var changes = entry.GetProperty("changes")[0];
+//         var value = changes.GetProperty("value");
+
+//         // Ignore non-message events
+//         if (!value.TryGetProperty("messages", out var messages))
+//         {
+//             Console.WriteLine("ℹ️ No messages field (status update or test event)");
+//             return Results.Ok();
+//         }
+
+//         foreach (var message in messages.EnumerateArray())
+//         {
+//             var from = message.GetProperty("from").GetString();
+//             var type = message.GetProperty("type").GetString();
+
+//             Console.WriteLine($"➡️ Message type: {type}");
+//             Console.WriteLine($"➡️ From: {from}");
+
+//             if (type != "text")
+//             {
+//                 Console.WriteLine("⚠️ Non-text message ignored");
+//                 continue;
+//             }
+
+//             var text = message
+//                 .GetProperty("text")
+//                 .GetProperty("body")
+//                 .GetString()
+//                 ?.Trim();
+
+//             Console.WriteLine($"📩 TEXT MESSAGE: {text}");
+
+//             // ⚠️ IMPORTANT: DO NOT SEND REPLY IN TEST MODE
+//             Console.WriteLine("🧪 TEST MODE: Auto-reply skipped (app unpublished)");
+//         }
+//     }
+//     catch (Exception ex)
+//     {
+//         Console.WriteLine($"❌ Webhook parsing error: {ex}");
+//     }
+
+//     // WhatsApp ALWAYS requires 200 OK
+//     return Results.Ok();
+// });
+
+
+// // app.MapPost("/webhook", async (
+// //     HttpRequest request,
+// //     JsonElement body,
+// //     IHttpClientFactory httpClientFactory
+// // ) =>
+// // {
+// //     try
+// //     {
+// //         // WhatsApp always sends entry as an array
+// //         var entry = body.GetProperty("entry")[0];
+// //         var changes = entry.GetProperty("changes")[0];
+// //         var value = changes.GetProperty("value");
+
+// //         // Ignore non-message events
+// //         if (!value.TryGetProperty("messages", out var messages))
+// //             return Results.Ok();
+
+// //         foreach (var message in messages.EnumerateArray())
+// //         {
+// //             var from = message.GetProperty("from").GetString();
+// //             var type = message.GetProperty("type").GetString();
+
+// //             if (type != "text")
+// //                 continue;
+
+// //             var text = message
+// //                 .GetProperty("text")
+// //                 .GetProperty("body")
+// //                 .GetString()
+// //                 ?.Trim();
+
+// //             Console.WriteLine($"📩 Incoming message from {from}: {text}");
+
+// //             if (!string.IsNullOrEmpty(from) && !string.IsNullOrEmpty(text))
+// //             {
+// //                 var reply = $"✅ Auto-reply: I received → {text}";
+// //                 await SendWhatsAppMessageAsync(from, reply, httpClientFactory);
+// //             }
+// //         }
+// //     }
+// //     catch (Exception ex)
+// //     {
+// //         Console.WriteLine($"❌ Webhook error: {ex.Message}");
+// //     }
+
+// //     // WhatsApp REQUIRES 200 OK
+// //     return Results.Ok();
+// // });
+
+
+
+// // // helper functions and records can go here
+// // // ==============================
+
+// // async Task SendWhatsAppMessageAsync(
+// //     string to,
+// //     string text,
+// //     IHttpClientFactory httpClientFactory
+// // )
+// // {
+// //     var token = Environment.GetEnvironmentVariable("WHATSAPP_ACCESS_TOKEN");
+// //     var phoneNumberId = Environment.GetEnvironmentVariable("WHATSAPP_PHONE_NUMBER_ID");
+
+// //     if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(phoneNumberId))
+// //     {
+// //         Console.WriteLine("❌ WhatsApp env vars missing");
+// //         return;
+// //     }
+
+// //     var payload = new
+// //     {
+// //         messaging_product = "whatsapp",
+// //         to = to,
+// //         type = "text",
+// //         text = new { body = text }
+// //     };
+
+// //     var client = httpClientFactory.CreateClient();
+// //     client.DefaultRequestHeaders.Authorization =
+// //         new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+// //     var response = await client.PostAsJsonAsync(
+// //         $"https://graph.facebook.com/v24.0/{phoneNumberId}/messages",
+// //         payload
+// //     );
+
+// //     if (!response.IsSuccessStatusCode)
+// //     {
+// //         var error = await response.Content.ReadAsStringAsync();
+// //         Console.WriteLine($"❌ Send failed: {error}");
+// //     }
+// // }
+
+
+
+
+
+
+
+// app.Run();
 
 
 
