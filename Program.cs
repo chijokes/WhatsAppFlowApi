@@ -1,4 +1,4 @@
-
+// 
 // // =======================================================
 // // 🔹 ENCRYPTED FLOW ENDPOINT (UNCHANGED)
 // // =======================================================
@@ -83,12 +83,9 @@
 
 
 // using Microsoft.AspNetCore.Builder;
-// using Microsoft.Extensions.DependencyInjection;
+// // using Microsoft.Extensions.DependencyInjection;
 // using Microsoft.AspNetCore.Http;
-// using System.Text.Json;
-// using System.Text;
-// using System.Net.Http;
-// using System.Net.Http.Headers;
+// // using System.Text.Json;
 
 // var builder = WebApplication.CreateBuilder(args);
 // builder.Services.AddHttpClient(); // Needed for sending messages
@@ -108,336 +105,157 @@
 //     var token = request.Query["hub.verify_token"].ToString();
 //     var challenge = request.Query["hub.challenge"].ToString();
 
-//     var verifyToken =
-//         Environment.GetEnvironmentVariable("MY_API_SECRET_KEY")
-//         ?? "supersecret123";
-
-//     if (mode == "subscribe" && token == verifyToken)
-//     {
-//         Console.WriteLine("Webhook verified successfully!");
-//         return Results.Text(challenge, "text/plain");
-//     }
-
-//     return Results.StatusCode(403);
-// });
-
-
-// app.MapPost("/webhook", async (
-//     HttpRequest request,
-//     JsonElement body,
-//     IHttpClientFactory httpClientFactory
-// ) =>
-// {
-//     Console.WriteLine("📡 Webhook POST received");
-
-//     try
-//     {
-//         // Log raw body (important for test debugging)
-//         Console.WriteLine($"🧪 Raw payload:\n{body}");
-
-//         var entry = body.GetProperty("entry")[0];
-//         var changes = entry.GetProperty("changes")[0];
-//         var value = changes.GetProperty("value");
-
-//         // Ignore non-message events
-//         if (!value.TryGetProperty("messages", out var messages))
-//         {
-//             Console.WriteLine("ℹ️ No messages field (status update or test event)");
-//             return Results.Ok();
-//         }
-
-//         foreach (var message in messages.EnumerateArray())
-//         {
-//             var from = message.GetProperty("from").GetString();
-//             var type = message.GetProperty("type").GetString();
-
-//             Console.WriteLine($"➡️ Message type: {type}");
-//             Console.WriteLine($"➡️ From: {from}");
-
-//             if (type != "text")
-//             {
-//                 Console.WriteLine("⚠️ Non-text message ignored");
-//                 continue;
-//             }
-
-//             var text = message
-//                 .GetProperty("text")
-//                 .GetProperty("body")
-//                 .GetString()
-//                 ?.Trim();
-
-//             Console.WriteLine($"📩 TEXT MESSAGE: {text}");
-
-//             // ⚠️ IMPORTANT: DO NOT SEND REPLY IN TEST MODE
-//             Console.WriteLine("🧪 TEST MODE: Auto-reply skipped (app unpublished)");
-//         }
-//     }
-//     catch (Exception ex)
-//     {
-//         Console.WriteLine($"❌ Webhook parsing error: {ex}");
-//     }
-
-//     // WhatsApp ALWAYS requires 200 OK
-//     return Results.Ok();
-// });
-
-
-// // app.MapPost("/webhook", async (
-// //     HttpRequest request,
-// //     JsonElement body,
-// //     IHttpClientFactory httpClientFactory
-// // ) =>
-// // {
-// //     try
-// //     {
-// //         // WhatsApp always sends entry as an array
-// //         var entry = body.GetProperty("entry")[0];
-// //         var changes = entry.GetProperty("changes")[0];
-// //         var value = changes.GetProperty("value");
-
-// //         // Ignore non-message events
-// //         if (!value.TryGetProperty("messages", out var messages))
-// //             return Results.Ok();
-
-// //         foreach (var message in messages.EnumerateArray())
-// //         {
-// //             var from = message.GetProperty("from").GetString();
-// //             var type = message.GetProperty("type").GetString();
-
-// //             if (type != "text")
-// //                 continue;
-
-// //             var text = message
-// //                 .GetProperty("text")
-// //                 .GetProperty("body")
-// //                 .GetString()
-// //                 ?.Trim();
-
-// //             Console.WriteLine($"📩 Incoming message from {from}: {text}");
-
-// //             if (!string.IsNullOrEmpty(from) && !string.IsNullOrEmpty(text))
-// //             {
-// //                 var reply = $"✅ Auto-reply: I received → {text}";
-// //                 await SendWhatsAppMessageAsync(from, reply, httpClientFactory);
-// //             }
-// //         }
-// //     }
-// //     catch (Exception ex)
-// //     {
-// //         Console.WriteLine($"❌ Webhook error: {ex.Message}");
-// //     }
-
-// //     // WhatsApp REQUIRES 200 OK
-// //     return Results.Ok();
-// // });
-
-
-
-// // // helper functions and records can go here
-// // // ==============================
-
-// // async Task SendWhatsAppMessageAsync(
-// //     string to,
-// //     string text,
-// //     IHttpClientFactory httpClientFactory
-// // )
-// // {
-// //     var token = Environment.GetEnvironmentVariable("WHATSAPP_ACCESS_TOKEN");
-// //     var phoneNumberId = Environment.GetEnvironmentVariable("WHATSAPP_PHONE_NUMBER_ID");
-
-// //     if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(phoneNumberId))
-// //     {
-// //         Console.WriteLine("❌ WhatsApp env vars missing");
-// //         return;
-// //     }
-
-// //     var payload = new
-// //     {
-// //         messaging_product = "whatsapp",
-// //         to = to,
-// //         type = "text",
-// //         text = new { body = text }
-// //     };
-
-// //     var client = httpClientFactory.CreateClient();
-// //     client.DefaultRequestHeaders.Authorization =
-// //         new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-
-// //     var response = await client.PostAsJsonAsync(
-// //         $"https://graph.facebook.com/v24.0/{phoneNumberId}/messages",
-// //         payload
-// //     );
-
-// //     if (!response.IsSuccessStatusCode)
-// //     {
-// //         var error = await response.Content.ReadAsStringAsync();
-// //         Console.WriteLine($"❌ Send failed: {error}");
-// //     }
-// // }
-
-
-
-
-
-
-
-// app.Run();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// using System.Text.Json;
+using System.Text;
+using System.Text.Json;
+using System.Net.Http.Json;
+using Microsoft.AspNetCore.Http.Json;
+using System.Security.Cryptography;
+using WhatsAppFlowApi;
 // using System.Text;
-// using Microsoft.AspNetCore.Http.Json;
-// using WhatsAppFlowApi;
+// using System.Net.Http;
 // using System.Net.Http.Headers;
 
 // var builder = WebApplication.CreateBuilder(args);
+// 
+builder.Services.Configure<JsonOptions>(options =>
+{
+	options.SerializerOptions.PropertyNamingPolicy = null;
+});
 
-// // ==============================
-// // JSON OPTIONS
-// // ==============================
-// builder.Services.Configure<JsonOptions>(options =>
-// {
-//     options.SerializerOptions.PropertyNamingPolicy = null;
-// });
+builder.Services.AddHttpClient();
 
-// // HttpClient needed for WhatsApp + external API
-// builder.Services.AddHttpClient();
+var app = builder.Build();
 
-// var app = builder.Build();
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+app.Urls.Add($"http://*:{port}");
 
-// // ==============================
-// // PORT BINDING (Render compatible)
-// // ==============================
-// var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
-// app.Urls.Add($"http://*:{port}");
-
-// // ==============================
-// // BASIC ENDPOINTS
-// // ==============================
 // app.MapGet("/", () => Results.Ok(new { status = "ok" }));
-// app.MapGet("/healthz", () => Results.Ok("Healthy"));
+// app.MapGet("/healthz", () => Results.Ok("healthy"));
 
-// app.MapGet("/debug/env", () =>
-// {
-//     var hasPem = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("PRIVATE_KEY_PEM"));
-//     var hasB64 = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("PRIVATE_KEY_PEM_B64"));
-//     return Results.Ok(new { keyPresent = hasPem || hasB64, hasPem, hasB64 });
-// });
+// Simple debug endpoint to check if PRIVATE_KEY_PEM is available
+app.MapGet("/debug/env", () =>
+{
+	var hasPem = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("PRIVATE_KEY_PEM"));
+	var hasB64 = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("PRIVATE_KEY_PEM_B64"));
+	return Results.Ok(new { keyPresent = hasPem || hasB64, hasPem, hasB64 });
+});
 
+// Returns dummy areas or proxies to an external API if AREAS_API_URL is set
+app.MapGet("/areas", async (IHttpClientFactory httpClientFactory) =>
+{
+	var api = Environment.GetEnvironmentVariable("AREAS_API_URL");
+	if (!string.IsNullOrEmpty(api))
+	{
+		try
+		{
+			var client = httpClientFactory.CreateClient();
+			var list = await client.GetFromJsonAsync<List<Area>>(api);
+			return Results.Ok(list ?? GetDefaultAreas());
+		}
+		catch (Exception ex)
+		{
+			Console.Error.WriteLine($"Failed fetching external areas: {ex.Message}");
+			return Results.Ok(GetDefaultAreas());
+		}
+	}
 
-// // =======================================================
-// // 🔹 WHATSAPP WEBHOOK VERIFICATION
-// // =======================================================
-// app.MapGet("/webhook", (HttpRequest request) =>
-// {
-//     var mode = request.Query["hub.mode"];
-//     var token = request.Query["hub.verify_token"];
-//     var challenge = request.Query["hub.challenge"];
+	return Results.Ok(GetDefaultAreas());
+});
 
-//     var verifyToken = Environment.GetEnvironmentVariable("MY_API_SECRET_KEY");
+// Encrypted flow endpoint expected by your Flow implementation.
+// Supports a simple `action` value of "get_areas" (or "areas") to return the areas payload.
+app.MapPost("/flows/endpoint", async (FlowEncryptedRequest req, IHttpClientFactory httpClientFactory) =>
+{
+	try
+	{
+		var privateKeyPem = Environment.GetEnvironmentVariable("PRIVATE_KEY_PEM");
 
-//     if (mode == "subscribe" && token == verifyToken)
-//     {
-//         return Results.Ok(challenge);
-//     }
+		if (string.IsNullOrEmpty(privateKeyPem))
+		{
+			var privateKeyPemB64 = Environment.GetEnvironmentVariable("PRIVATE_KEY_PEM_B64");
+			if (!string.IsNullOrEmpty(privateKeyPemB64))
+			{
+				privateKeyPem = Encoding.UTF8.GetString(Convert.FromBase64String(privateKeyPemB64));
+			}
+		}
 
-//     return Results.Unauthorized();
-// });
+		if (string.IsNullOrEmpty(privateKeyPem))
+			return Results.BadRequest(new { error = "PRIVATE_KEY_PEM not set" });
 
+		var rsa = FlowEncryptStatic.LoadRsaFromPem(privateKeyPem);
 
-// // =======================================================
-// // 🔹 RECEIVE WHATSAPP MESSAGE (send Flow on "hi")
-// // =======================================================
-// app.MapPost("/webhook", async (
-//     JsonElement body,
-//     IHttpClientFactory httpClientFactory
-// ) =>
-// {
-//     try
-//     {
-//         var message =
-//             body.GetProperty("entry")[0]
-//                 .GetProperty("changes")[0]
-//                 .GetProperty("value")
-//                 .GetProperty("messages")[0];
+		var decryptedJson = FlowEncryptStatic.DecryptFlowRequest(req, rsa, out var aesKey, out var iv);
 
-//         var from = message.GetProperty("from").GetString();
-//         var text = message.GetProperty("text")
-//                           .GetProperty("body")
-//                           .GetString()
-//                           ?.Trim()
-//                           .ToLower();
+		using var doc = JsonDocument.Parse(decryptedJson);
+		var root = doc.RootElement;
+		var action = root.TryGetProperty("action", out var act) ? act.GetString() : null;
 
-//         if (text == "hi" && from != null)
-//         {
-//             await SendFlowAsync(from, httpClientFactory);
-//         }
-//     }
-//     catch
-//     {
-//         // WhatsApp expects 200 always
-//     }
+		if (!string.IsNullOrEmpty(action) && (action == "get_areas" || action == "areas" || action == "fetch_areas"))
+		{
+			var areas = await FetchAreasAsync(httpClientFactory);
 
-//     return Results.Ok();
-// });
+			var responseObj = new
+			{
+				version = "3.0",
+				data = new
+				{
+					delivery_areas = areas.Select(a => new { id = a.Id, title = a.Title, fee = a.Fee })
+				}
+			};
 
+			var encrypted = FlowEncryptStatic.EncryptFlowResponse(responseObj, aesKey, iv);
+			return Results.Text(encrypted, "application/json");
+		}
 
-// // =======================================================
-// // 🔹 FLOW DATA API (DYNAMIC DROPDOWN)
-// // =======================================================
-// app.MapPost("/flow-data", async (
-//     IHttpClientFactory httpClientFactory
-// ) =>
-// {
-//     var client = httpClientFactory.CreateClient();
+		// ping fallback
+		if (action == "ping")
+		{
+			var responseObj = new { version = "3.0", data = new { status = "active" } };
+			var encrypted = FlowEncryptStatic.EncryptFlowResponse(responseObj, aesKey, iv);
+			return Results.Text(encrypted, "application/json");
+		}
 
-//     // 🔹 CALL YOUR EXTERNAL API
-//     // Example expected response:
-//     // [{ "code": "lekki", "name": "Lekki Phase 1" }]
-//     var areas = await client.GetFromJsonAsync<List<AreaDto>>(
-//         "https://api.mybusiness.com/delivery-areas"
-//     );
+		var fallbackObj = new { version = "3.0", data = new { status = "active" } };
+		var fallback = FlowEncryptStatic.EncryptFlowResponse(fallbackObj, aesKey, iv);
+		return Results.Text(fallback, "application/json");
+	}
+	catch (Exception ex)
+	{
+		Console.Error.WriteLine(ex);
+		return Results.StatusCode(500);
+	}
+});
 
-//     var dropdown = areas!.Select(a => new
-//     {
-//         id = a.Code,
-//         title = a.Name
-//     });
+app.Run();
 
-//     return Results.Ok(new
-//     {
-//         delivery_areas = dropdown
-//     });
-// });
+// helpers
+static List<Area> GetDefaultAreas() => new()
+{
+	new Area("lekki","Lekki Phase 1",1500),
+	new Area("ikeja","Ikeja GRA",1000)
+};
 
+static async Task<List<Area>> FetchAreasAsync(IHttpClientFactory httpClientFactory)
+{
+	var api = Environment.GetEnvironmentVariable("AREAS_API_URL");
+	if (!string.IsNullOrEmpty(api))
+	{
+		try
+		{
+			var client = httpClientFactory.CreateClient();
+			var list = await client.GetFromJsonAsync<List<Area>>(api);
+			if (list != null && list.Count > 0) return list;
+		}
+		catch (Exception ex)
+		{
+			Console.Error.WriteLine($"FetchAreasAsync failed: {ex.Message}");
+		}
+	}
 
-// // =======================================================
-// // 🔹 ENCRYPTED FLOW ENDPOINT (UNCHANGED)
-// // =======================================================
-// app.MapPost("/flows/endpoint", async (FlowEncryptedRequest req) =>
-// {
-//     try
-//     {
+	return GetDefaultAreas();
+}
+
+record Area(string Id, string Title, int Fee);
 //         var privateKeyPem = Environment.GetEnvironmentVariable("PRIVATE_KEY_PEM");
 
 //         if (string.IsNullOrEmpty(privateKeyPem))
