@@ -49,7 +49,7 @@ var app = builder.Build();
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
 app.Urls.Add($"http://*:{port}");
 
-app.MapGet("/", () => Results.Ok(new { status = "ok" }));
+app.MapGet("/", () => Results.Ok(new { status = "ok whatsap flow" }));
 app.MapGet("/healthz", () => Results.Ok("healthy"));
 
 // Simple debug endpoint to check if PRIVATE_KEY_PEM is available

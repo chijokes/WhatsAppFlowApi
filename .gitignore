@@ -1,37 +1,92 @@
-
-
-## Build directories
+####################################
+# Build results
+####################################
 bin/
 obj/
+out/
 
-## Visual Studio files
+####################################
+# Visual Studio
+####################################
 .vs/
 *.user
 *.suo
 *.userosscache
 *.sln.docstates
 
-## Rider files
+####################################
+# Visual Studio Code
+####################################
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+####################################
+# Rider / JetBrains
+####################################
 .idea/
 
-## OS files
+####################################
+# OS files
+####################################
 .DS_Store
 Thumbs.db
 
-## NuGet packages
-*.nupkg
-packages/
-.nuget/
-
-## Logs
+####################################
+# Logs
+####################################
 *.log
 
-## Environment files
-.env
-appsettings.Development.json
+####################################
+# NuGet
+####################################
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+.nuget/packages/
 
-## Backup files
+####################################
+# ASP.NET Core
+####################################
+appsettings.Development.json
+appsettings.Local.json
+secrets.json
+
+####################################
+# Environment files
+####################################
+.env
+.env.*
+
+####################################
+# Test results
+####################################
+TestResults/
+
+####################################
+# Publish outputs
+####################################
+publish/
+*.Publish.xml
+*.pubxml
+*.pubxml.user
+
+####################################
+# Backup & temp files
+####################################
 *.bak
 *.backup
 *.swp
+*~
 
+####################################
+# Compiled binaries (extra safety)
+####################################
+*.dll
+*.pdb
+*.exe
+*.dll.config
+*.exe.config
