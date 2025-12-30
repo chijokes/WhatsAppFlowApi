@@ -97,6 +97,10 @@ app.MapPost("/flows/endpoint", async (FlowEncryptedRequest req, IHttpClientFacto
 
 		var rsa = FlowEncryptStatic.LoadRsaFromPem(privateKeyPem);
 
+		Console.WriteLine("Request: encrypted_flow_data=" + req.encrypted_flow_data?.Substring(0, Math.Min(50, req.encrypted_flow_data?.Length ?? 0)) + "...");
+		Console.WriteLine("Request: encrypted_aes_key=" + req.encrypted_aes_key);
+		Console.WriteLine("Request: initial_vector=" + req.initial_vector);
+
 		var decryptedJson = FlowEncryptStatic.DecryptFlowRequest(req, rsa, out var aesKey, out var iv);
 
 		Console.WriteLine("Fetched data: " + decryptedJson);
@@ -145,7 +149,7 @@ app.MapPost("/flows/endpoint", async (FlowEncryptedRequest req, IHttpClientFacto
 	catch (Exception ex)
 	{
 		Console.Error.WriteLine(ex);
-		return Results.StatusCode(500);
+		return Results.Json(new { error = ex.Message, details = ex.ToString() }, statusCode: 500);
 	}
 });
 
