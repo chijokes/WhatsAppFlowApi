@@ -60,7 +60,7 @@ app.MapGet("/debug/env", () =>
 	return Results.Ok(new { keyPresent = hasPem || hasB64, hasPem, hasB64 });
 });
 
-// Returns dummy areas or proxies to an external API if AREAS_API_URL is set
+//// Returns dummy areas or proxies to an external API if AREAS_API_URL is set
 app.MapGet("/areas", async (IHttpClientFactory httpClientFactory) =>
 {
 	var api = Environment.GetEnvironmentVariable("AREAS_API_URL");

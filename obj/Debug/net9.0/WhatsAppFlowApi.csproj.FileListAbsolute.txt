@@ -83,3 +83,16 @@ C:/Users/USER/Desktop/my-work/WhatsAppFlowApi/bin/Debug/net9.0/BouncyCastle.Cryp
 /workspaces/WhatsAppFlowApi/obj/Debug/net9.0/WhatsAppFlowApi.pdb
 /workspaces/WhatsAppFlowApi/obj/Debug/net9.0/WhatsAppFlowApi.genruntimeconfig.cache
 /workspaces/WhatsAppFlowApi/obj/Debug/net9.0/ref/WhatsAppFlowApi.dll
+C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\obj\Debug\net9.0\WhatsAppFlowApi.csproj.AssemblyReference.cache
+C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\obj\Debug\net9.0\rpswa.dswa.cache.json
+C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\obj\Debug\net9.0\WhatsAppFlowApi.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\obj\Debug\net9.0\WhatsAppFlowApi.AssemblyInfoInputs.cache
+C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\obj\Debug\net9.0\WhatsAppFlowApi.AssemblyInfo.cs
+C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\obj\Debug\net9.0\WhatsAppFlowApi.csproj.CoreCompileInputs.cache
+C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\obj\Debug\net9.0\WhatsAppFlowApi.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\obj\Debug\net9.0\WhatsAppFlowApi.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\obj\Debug\net9.0\WhatsAppFlowApi.sourcelink.json
+C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\obj\Debug\net9.0\rjimswa.dswa.cache.json
+C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\obj\Debug\net9.0\WhatsAppFlowApi.dll
+C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\obj\Debug\net9.0\refint\WhatsAppFlowApi.dll
+C:\Users\USER\Desktop\my-work\WhatsAppFlowApi\obj\Debug\net9.0\WhatsAppFlowApi.pdb
