@@ -33,6 +33,8 @@ using System.Text.Json;
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Http.Json;
 using System.Security.Cryptography;
+using System.IO;
+using System.Linq;
 using WhatsAppFlowApi;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -47,7 +49,7 @@ builder.Services.AddHttpClient();
 var app = builder.Build();
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
-app.Urls.Add($"http://*:{port}");
+// app.Urls.Add($"http://*:{port}");
 
 app.MapGet("/", () => Results.Ok(new { status = "ok whatsap flow" }));
 app.MapGet("/healthz", () => Results.Ok("healthy"));
@@ -88,16 +90,7 @@ app.MapPost("/flows/endpoint", async (FlowEncryptedRequest req, IHttpClientFacto
 {
 	try
 	{
-		var privateKeyPem = Environment.GetEnvironmentVariable("PRIVATE_KEY_PEM");
-
-		if (string.IsNullOrEmpty(privateKeyPem))
-		{
-			var privateKeyPemB64 = Environment.GetEnvironmentVariable("PRIVATE_KEY_PEM_B64");
-			if (!string.IsNullOrEmpty(privateKeyPemB64))
-			{
-				privateKeyPem = Encoding.UTF8.GetString(Convert.FromBase64String(privateKeyPemB64));
-			}
-		}
+		var privateKeyPem = GetPrivateKey();
 
 		if (string.IsNullOrEmpty(privateKeyPem))
 			return Results.BadRequest(new { error = "PRIVATE_KEY_PEM not set" });
@@ -105,6 +98,8 @@ app.MapPost("/flows/endpoint", async (FlowEncryptedRequest req, IHttpClientFacto
 		var rsa = FlowEncryptStatic.LoadRsaFromPem(privateKeyPem);
 
 		var decryptedJson = FlowEncryptStatic.DecryptFlowRequest(req, rsa, out var aesKey, out var iv);
+
+		Console.WriteLine("Fetched data: " + decryptedJson);
 
 		using var doc = JsonDocument.Parse(decryptedJson);
 		var root = doc.RootElement;
@@ -127,6 +122,8 @@ app.MapPost("/flows/endpoint", async (FlowEncryptedRequest req, IHttpClientFacto
 				}
 			};
 
+			Console.WriteLine("Response format: " + JsonSerializer.Serialize(responseObj));
+
 			var encrypted = FlowEncryptStatic.EncryptFlowResponse(responseObj, aesKey, iv);
 			return Results.Text(encrypted, "application/json");
 		}
@@ -135,11 +132,13 @@ app.MapPost("/flows/endpoint", async (FlowEncryptedRequest req, IHttpClientFacto
 		if (action == "ping")
 		{
 			var responseObj = new { version = "3.0", response = new { screen = "INIT", data = new { status = "active" } } };
+			Console.WriteLine("Response format: " + JsonSerializer.Serialize(responseObj));
 			var encrypted = FlowEncryptStatic.EncryptFlowResponse(responseObj, aesKey, iv);
 			return Results.Text(encrypted, "application/json");
 		}
 
 		var fallbackObj = new { version = "3.0", response = new { screen = "INIT", data = new { status = "active" } } };
+		Console.WriteLine("Response format: " + JsonSerializer.Serialize(fallbackObj));
 		var fallback = FlowEncryptStatic.EncryptFlowResponse(fallbackObj, aesKey, iv);
 		return Results.Text(fallback, "application/json");
 	}
@@ -149,6 +148,29 @@ app.MapPost("/flows/endpoint", async (FlowEncryptedRequest req, IHttpClientFacto
 		return Results.StatusCode(500);
 	}
 });
+
+static string GetPrivateKey()
+{
+	var pem = Environment.GetEnvironmentVariable("PRIVATE_KEY_PEM");
+	if (!string.IsNullOrEmpty(pem)) return pem;
+
+	var file = "private_key.pem";
+	if (File.Exists(file))
+	{
+		return File.ReadAllText(file);
+	}
+
+	// generate
+	var rsa = RSA.Create(2048);
+	var pemKey = rsa.ExportRSAPrivateKeyPem();
+	File.WriteAllText(file, pemKey);
+
+	// also export public key
+	var publicPem = rsa.ExportRSAPublicKeyPem();
+	File.WriteAllText("public_key.pem", publicPem);
+
+	return pemKey;
+}
 
 app.Run();
 
