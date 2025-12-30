@@ -117,9 +117,13 @@ app.MapPost("/flows/endpoint", async (FlowEncryptedRequest req, IHttpClientFacto
 			var responseObj = new
 			{
 				version = "3.0",
-				data = new
+				response = new
 				{
-					delivery_areas = areas.Select(a => new { id = a.Id, title = a.Title, fee = a.Fee })
+					screen = "AREAS",
+					data = new
+					{
+						delivery_areas = areas.Select(a => new { id = a.Id, title = a.Title, fee = a.Fee })
+					}
 				}
 			};
 
@@ -130,12 +134,12 @@ app.MapPost("/flows/endpoint", async (FlowEncryptedRequest req, IHttpClientFacto
 		// ping fallback
 		if (action == "ping")
 		{
-			var responseObj = new { version = "3.0", data = new { status = "active" } };
+			var responseObj = new { version = "3.0", response = new { screen = "INIT", data = new { status = "active" } } };
 			var encrypted = FlowEncryptStatic.EncryptFlowResponse(responseObj, aesKey, iv);
 			return Results.Text(encrypted, "application/json");
 		}
 
-		var fallbackObj = new { version = "3.0", data = new { status = "active" } };
+		var fallbackObj = new { version = "3.0", response = new { screen = "INIT", data = new { status = "active" } } };
 		var fallback = FlowEncryptStatic.EncryptFlowResponse(fallbackObj, aesKey, iv);
 		return Results.Text(fallback, "application/json");
 	}
